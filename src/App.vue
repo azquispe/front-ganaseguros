@@ -1,6 +1,6 @@
 <template>
   <v-app>
-
+    <dialogLoadingComponent></dialogLoadingComponent>
     <loginComponent v-if="usuarioStorage==null || usuarioStorage.usuarioId==''"></loginComponent>
     <div v-else >
       <v-card flat>
@@ -68,6 +68,7 @@
 <script setup>
 
 import {useRouter} from 'vue-router'
+import dialogLoadingComponent from '@/modules/transversal/component/DialogLoadingComponent.vue'
 import {ref} from 'vue'
 import loginComponent from '@/modules/usuario/components/LoginComponent.vue'
 

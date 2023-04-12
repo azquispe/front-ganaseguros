@@ -13,7 +13,7 @@ export const useColumnasReporteStore = defineStore( 'ColumnasReporteStore',{
   actions:{
     async obtenerColumnasReportesTodos() {
       try{
-        const r = await axios.get(`http://localhost:7001/api/erp/v1/obtener-columnas-reportes`);
+        const r = await axios.get(`http://192.168.100.22:7001/api/erp/v1/obtener-columnas-reportes`);
         this.lstColumnasReporte = r.data.columnasExcel;
 
       }catch (error) {

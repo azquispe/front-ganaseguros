@@ -23,9 +23,11 @@
         <tr class="text-caption">{{ column.title.toUpperCase() }}</tr>
       </template>
       <template v-slot:column.nombreReporte="{ column }">
+        <input  @input="clickBuscar()"  style="width: 100px; border: 1px solid #c2c3c4; padding: 2px; margin-top: 2px;" type="search" id="searchNombreRepo" ><br>
         <tr class="text-caption">{{ column.title.toUpperCase() }}</tr>
       </template>
       <template v-slot:column.tipoMoneda="{ column }">
+        <input  @input="clickBuscar()"  style="width: 50px; border: 1px solid #c2c3c4; padding: 2px; margin-top: 2px;" type="search" id="searchTipoMoneda" ><br>
         <tr class="text-caption">{{ column.title.toUpperCase() }}</tr>
       </template>
       <template v-slot:column.codigoConcepto="{ column }">
@@ -35,6 +37,7 @@
         <tr class="text-caption">{{ column.title.toUpperCase() }}</tr>
       </template>
       <template v-slot:column.codigoCuentaSapPuc="{ column }">
+        <input  @input="clickBuscar()"  style="width: 100px; border: 1px solid #c2c3c4; padding: 2px; margin-top: 2px;" type="search" id="searchCuentaSapPuc" ><br>
         <tr class="text-caption">{{ column.title.toUpperCase() }}</tr>
       </template>
       <template v-slot:column.descripcionCuenta="{ column }">
@@ -120,6 +123,12 @@ onMounted(async ()=>{
 const clickBuscar = () =>{
   let codRamo = document.getElementById("searchCodRamo").value;
   let codReporte = document.getElementById("searchCodReporte").value;
+  let nombreReporte = document.getElementById("searchNombreRepo").value;
+  let tipoMoneda = document.getElementById("searchTipoMoneda").value;
+  let cuentaSapPuc = document.getElementById("searchCuentaSapPuc").value;
+
+
+
   lstTablaIntermedia.value = lstTablaIntermediaTodos.value
   if(codRamo!=""){
     if(codRamo>0){
@@ -131,6 +140,16 @@ const clickBuscar = () =>{
       lstTablaIntermedia.value = lstTablaIntermedia.value.filter(r => (r.codReporte+"").includes(codReporte));
     }
   }
+  if(nombreReporte!=""){
+      lstTablaIntermedia.value = lstTablaIntermedia.value.filter(r => (r.nombreReporte+"").includes(nombreReporte));
+  }
+  if(tipoMoneda!=""){
+    lstTablaIntermedia.value = lstTablaIntermedia.value.filter(r => (r.tipoMoneda+"").includes(tipoMoneda));
+  }
+  if(cuentaSapPuc!=""){
+    lstTablaIntermedia.value = lstTablaIntermedia.value.filter(r => (r.codigoCuentaSapPuc+"").includes(cuentaSapPuc));
+  }
+
 }
 
 

@@ -8,7 +8,6 @@
     item-value="tablaIntermediaId"
     class="elevation-1"
     density="compact"
-
   >
     <template v-slot:column.codReporte="{ column }">
       <input  @input="clickBuscar()"  style="width: 50px; border: 1px solid #c2c3c4; padding: 2px; margin-top: 2px;" type="search" id="searchCodReporte" ><br>
@@ -19,6 +18,7 @@
       <tr class="text-caption">{{ column.title.toUpperCase() }}</tr>
     </template>
     <template v-slot:column.colummaExcel="{ column }">
+      <input  @input="clickBuscar()"  style="width: 50px; border: 1px solid #c2c3c4; padding: 2px; margin-top: 2px;" type="search" id="searchColumna" ><br>
       <tr class="text-caption">{{ column.title.toUpperCase() }}</tr>
     </template>
     <template v-slot:column.acciones="{ column }">
@@ -76,6 +76,7 @@ const clickBuscar = () =>{
   console.log("buscar")
   let codReporte = document.getElementById("searchCodReporte").value;
   let codConcepto = document.getElementById("searchCodConcepto").value;
+  let columna = document.getElementById("searchColumna").value;
   lstColumnasReporte.value = columnasReporteStore.getLstColumnasReporte
 
   if(codReporte!=""){
@@ -88,6 +89,13 @@ const clickBuscar = () =>{
       lstColumnasReporte.value = lstColumnasReporte.value.filter(r => (r.codConcepto+"").includes(codConcepto));
     }
   }
+
+  if(columna!=""){
+    if(columna>0){
+      lstColumnasReporte.value = lstColumnasReporte.value.filter(r => (r.colummaExcel+"").includes(columna));
+    }
+  }
+
 }
 
 </script>
