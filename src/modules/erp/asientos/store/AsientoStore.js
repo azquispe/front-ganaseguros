@@ -6,10 +6,22 @@ export const useAsientoStore = defineStore('AsientoStore',{
     state: () => ({
         lstReporte:[],
         dialogCargaAsientoExcel:false,
+        lstAsientosEnviados:[],
+        lstAsientosEnviadosTodos:[],
+        tipoReporteId:0,
       }),
     getters:{
+        getTipoReporteId(state){
+          return state.tipoReporteId;
+        },
         getLstReporte(state){
             return state.lstReporte;
+        },
+        getLstAsientosEnviados(state){
+          return state.lstAsientosEnviados;
+        },
+        getLstAsientosEnviadosTodos(state){
+          return state.lstAsientosEnviadosTodos;
         },
         getDialogCargaAsientoExcel(state){
           return state.dialogCargaAsientoExcel;
@@ -20,11 +32,21 @@ export const useAsientoStore = defineStore('AsientoStore',{
       setDialogCargaAsientoExcel(dialog){
         this.dialogCargaAsientoExcel = dialog;
       },
+      setLstAsientosEnviados(lst){
+        this.lstAsientosEnviados= lst;
+      },
+      setLstAsientosEnviadosTodos(lst){
+        this.lstAsientosEnviadosTodos= lst;
+      },
+      setTipoReporteId(pTipoReporteId){
+        this.tipoReporteId=pTipoReporteId;
+      },
       async cargarArchivoAsiento(pFormData,pTipoReporteId,pUsuarioId){
         this.tipoReporteId = pTipoReporteId;
         try{
           const headers = { 'Content-Type': 'multipart/form-data' };
           const r = await axios.post(`http://192.168.100.22:7001/api/erp/v1/cargar-archivo-asiento/${pTipoReporteId}/${pUsuarioId}`, pFormData, { headers })
+
           return r.data;
         }catch (error){
           console.log("error al cargar archivo: "+error)
@@ -39,9 +61,11 @@ export const useAsientoStore = defineStore('AsientoStore',{
             try {
                 const r = await axios.get(`http://192.168.100.22:7001/api/erp/v1/obtener-reportes/${pUsuarioId}/${pTipoReporteId}`);
                 this.lstReporte = r.data.reportes;
+                return r.data.reportes;
 
             } catch (error) {
               console.log("error al obtener reportes: "+error)
+              return [];
             }
         },
 
@@ -63,7 +87,9 @@ export const useAsientoStore = defineStore('AsientoStore',{
           let lst = r.data.asientos;
 
           lst.forEach((element) => {
-            element.editar = false;
+            element.amountDebe_Editar = false;
+            element.amountHaber_Editar = false;
+            element.codigoConcepto_Editar = false;
           });
 
           return lst;
@@ -73,9 +99,9 @@ export const useAsientoStore = defineStore('AsientoStore',{
         }
       },
 
-      async enviarErpAsientos(obj,asientoCabTemId,pUsuarioId){
+      async enviarErpAsientos(obj){
         try {
-          const r = await axios.post(`http://192.168.100.22:7001/api/erp/v1/enviar-erp-asientos/${asientoCabTemId}/${pUsuarioId}`,obj);
+          const r = await axios.post(`http://192.168.100.22:7001/api/erp/v1/enviar-erp-asientos`,obj);
           return r.data;
         }catch (error) {
           return {
@@ -84,7 +110,8 @@ export const useAsientoStore = defineStore('AsientoStore',{
           }
         }
       },
-      async enviarErpAsientosTodos(pUsuarioId,pTipoReporteId){
+
+      /*async enviarErpAsientosTodos(pUsuarioId,pTipoReporteId){
         try {
           const r = await axios.post(`http://192.168.100.22:7001/api/erp/v1/enviar-erp-asientos-todos/${pUsuarioId}/${pTipoReporteId}`);
           return r.data;
@@ -94,10 +121,12 @@ export const useAsientoStore = defineStore('AsientoStore',{
             mensaje:"error"
           }
         }
-      },
+      },*/
       async obtenerAsientosEnviadosTodos(){
         try {
           const r = await axios.get(`http://192.168.100.22:7001/api/erp/v1/obtener-asientos-enviados-todos`);
+          this.lstAsientosEnviadosTodos =  r.data.asientosEnviados;
+          this.lstAsientosEnviados =  r.data.asientosEnviados;
           return r.data;
         }catch (error) {
           return {
@@ -106,6 +135,7 @@ export const useAsientoStore = defineStore('AsientoStore',{
           }
         }
       },
+
       async modificarAsientoDetalle(obj){
         try {
           const r = await axios.post(`http://192.168.100.22:7001/api/erp/v1/modificar-asiento-detalle/${obj.asientoDetTemId}`, obj);
@@ -119,11 +149,27 @@ export const useAsientoStore = defineStore('AsientoStore',{
       },
       async verificarAsientosPendientesPorEnviar(){
         let asientosPendientes = 0;
-        for (const reporte of this.lstReporte) {
-          let lstCab =  await this.obtenerAsientoCab(reporte.codReporte)
-          asientosPendientes =  asientosPendientes + lstCab.filter(r => r.nroasientoSap =='null').length;
+        if(this.lstReporte){
+          for (const reporte of this.lstReporte) {
+            let lstCab =  await this.obtenerAsientoCab(reporte.codReporte)
+            asientosPendientes =  asientosPendientes + lstCab.filter(r => r.nroasientoSap =='null').length;
+          }
+          return asientosPendientes;
+        }else{
+          return [];
         }
-        return asientosPendientes;
+      },
+      async obtenerCantidadAsientos(pUsuarioId,pTipoReporteId){
+        try {
+          const r = await axios.get(`http://192.168.100.22:7001/api/erp/v1/obtener-cantidad-asientos/${pUsuarioId}/${pTipoReporteId}`);
+          return r.data;
+        }catch (error) {
+          return {
+            codigoMensaje:"-1",
+            mensaje:"error"
+          }
+        }
       }
+
     }
 })

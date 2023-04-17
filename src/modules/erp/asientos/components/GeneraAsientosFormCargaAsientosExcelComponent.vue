@@ -7,8 +7,6 @@
         elevation="0"
         density="compact"
       >
-
-
         <v-toolbar-title>
           CARGA DE ASIENTOS
         </v-toolbar-title>
@@ -24,12 +22,6 @@
     </v-card-title>
     <v-card-text>
       <v-row>
-        <!--<v-col cols="12" >
-
-          <v-autocomplete density="compact"   variant="outlined" v-model="vTipoReporte" :items="lstTipoReportes" item-value="dominioId"
-                          item-title="descripcion" outlined dense label="Tipo de Reporte" hide-details
-                          clearable></v-autocomplete>
-        </v-col>-->
         <v-col cols="12">
           <span>Seleccione Archivo Excel:</span>
           <input type="file" ref="refFileDatosResumen">
@@ -38,7 +30,6 @@
     </v-card-text>
     <v-card-actions>
       <v-chip  class="ma-2" color="primary" label @click="clickCargarAsientosExcel() ">
-
         Subir Asiento
       </v-chip>
     </v-card-actions>
@@ -56,8 +47,6 @@ const dominioStore = useDominioStore();
 //const vTipoReporte = ref(1034);
 const lstTipoReportes = ref([]);
 const refFileDatosResumen = ref(null)
-const props = defineProps(['pTipoReporteId'])
-
 
 
 onMounted(async () => {
@@ -70,14 +59,8 @@ const clickCargarAsientosExcel = async () => {
   const formData = new FormData();
   formData.append('file', refFileDatosResumen.value.files[0]);
   dialogLoadingStore.setDialogLoading(true,"Cargando Archivo...");
-  let r = await asientoStore.cargarArchivoAsiento(formData, props.pTipoReporteId, 1000); // usuario no debe ser quemado
+  let r = await asientoStore.cargarArchivoAsiento(formData,asientoStore.getTipoReporteId, 1000); // usuario no debe ser quemado
   alert (r.mensaje);
-  /*if (r.codigoMensaje != "1000") {
-    alert(r.mensaje);
-    return;
-  }*/
-  // obtener asientos excel
-
   await asientoStore.obtenerReportes(1000,0);
   dialogLoadingStore.setDialogLoading(false);
   asientoStore.setDialogCargaAsientoExcel(false);

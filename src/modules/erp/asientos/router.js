@@ -3,7 +3,7 @@ export default [
   {
     path: '/erp/genera-asientos',
     name: 'erpGeneraAsientosExcel',
-    component: () => import('@/modules/erp/asientos/pages/GeneraAsientosExcelPage.vue')
+    component: () => import('@/modules/erp/asientos/pages/GeneraAsientosPage.vue')
   },
   {
     path: '/erp/asientos-enviados',
