@@ -34,20 +34,18 @@
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            {{fechaDesde}}
             <span>Fecha Desde:</span>
             <input type="date" v-model="fechaDesde">
 
           </v-col>
           <v-col cols="12">
-            {{fechaHasta}}
             <span>Fecha Hasta:</span>
             <input type="date" v-model="fechaHasta">
           </v-col>
         </v-row>
       </v-card-text>
       <v-card-actions>
-        <v-chip class="ma-2" color="primary" label @click=" clickEnviarReporteErp()">
+        <v-chip class="ma-2" color="primary" label @click=" clickEnviar()">
           Enviar Asiento a ERP
         </v-chip>
       </v-card-actions>
@@ -93,7 +91,7 @@
           Replegar Todo
         </v-btn>
 
-        <v-chip class="ma-2" color="primary" label @click="clickEnviarTodoAerp()">
+        <v-chip class="ma-2" color="primary" label @click="dialogEnviarAsiento=true;enviarTodo=true; /*clickEnviarTodoAerp()*/">
           Enviar Todo a ERP
         </v-chip>
 
@@ -133,7 +131,7 @@
                 cols="3"
                 class="text--secondary"
               >
-                <v-btn class="ma-2" elevation="0" density="compact" @click.stop="dialogEnviarAsiento=true; objReporteSeleccionado = obj; /*clickEnviarReporteErp(obj)*/">
+                <v-btn class="ma-2" elevation="0" density="compact" @click.stop="dialogEnviarAsiento=true;enviarTodo=false; objReporteSeleccionado = obj; /*clickEnviarReporteErp(obj)*/">
                   Enviar a ERP
                 </v-btn>
               </v-col>
@@ -170,6 +168,7 @@ const lstTipoReportes = ref([]);
 const asientoStore = useAsientoStore();
 const panel = ref([]);
 
+const enviarTodo = ref(false);
 const dialogEnviarAsiento = ref(false);
 const fechaDesde = ref(new Date);
 const fechaHasta = ref(new Date);
@@ -186,7 +185,13 @@ const desplegar = () => {
 const replegar = () => {
   panel.value = []
 }
-
+const clickEnviar = () =>{
+  if(enviarTodo.value){
+    clickEnviarTodoAerp();
+  }else{
+    clickEnviarReporteErp();
+  }
+}
 const clickEnviarTodoAerp = async () => {
   replegar();
 

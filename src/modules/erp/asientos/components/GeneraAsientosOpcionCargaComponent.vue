@@ -9,12 +9,14 @@
     </v-col>
     <v-col cols="12"
            md="2">
-      <v-chip v-if="  lstTipoReportes.filter(r => r.dominioId == tipoReporteId && r.abreviatura=='CORE' ).length>0"
+      <v-chip class="ma-2" color="primary" label  @click="clickAbrirDialogoCargaExcel() ">Cargar Asientos
+      </v-chip>
+      <!--<v-chip v-if="  lstTipoReportes.filter(r => r.dominioId == tipoReporteId && r.abreviatura=='CORE' ).length>0"
               class="ma-2" color="primary" label>Cargar Asientos desde CORE
       </v-chip>
       <v-chip v-else class="ma-2" color="primary" label @click="clickAbrirDialogoCargaExcel() ">Cargar Asientos
         desde Excel
-      </v-chip>
+      </v-chip>-->
     </v-col>
   </v-row>
 </template>

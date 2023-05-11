@@ -64,6 +64,7 @@ export const useAsientoStore = defineStore('AsientoStore',{
                 return r.data.reportes;
 
             } catch (error) {
+              alert("error al obtener reportes, mensaje técnico: "+error);
               console.log("error al obtener reportes: "+error)
               return [];
             }
@@ -75,6 +76,7 @@ export const useAsientoStore = defineStore('AsientoStore',{
           return r.data.ramos;
 
         } catch (error) {
+          alert("error al obtener asientos, mensaje técnico: "+error);
           console.log("error al obtener asientos Cab: "+error)
           return [];
         }
@@ -95,6 +97,7 @@ export const useAsientoStore = defineStore('AsientoStore',{
           return lst;
         } catch (error) {
           console.log("error al obtener asientos Det: "+error)
+          alert("error al obtener asientos, mensaje técnico: "+error);
           return [];
         }
       },
@@ -102,11 +105,16 @@ export const useAsientoStore = defineStore('AsientoStore',{
       async enviarErpAsientos(obj){
         try {
           const r = await axios.post(`http://192.168.100.22:7001/api/erp/v1/enviar-erp-asientos`,obj);
+          if(r.data.codigoMensaje!="1" ){
+            alert("codigo: "+r.data.codigoMensaje+" mensaje:"+r.data.mensaje);
+          }
           return r.data;
         }catch (error) {
+          console.log("error exceptiocn")
+          alert("error al enviar asientos, mensaje técnico: "+error);
           return {
             codigoMensaje:"-1",
-            mensaje:"error"
+            mensaje:error
           }
         }
       },
@@ -129,6 +137,7 @@ export const useAsientoStore = defineStore('AsientoStore',{
           this.lstAsientosEnviados =  r.data.asientosEnviados;
           return r.data;
         }catch (error) {
+          alert("error al obtener reporte de asientos, mensaje técnico: "+error);
           return {
             codigoMensaje:"-1",
             mensaje:"error"
@@ -141,6 +150,7 @@ export const useAsientoStore = defineStore('AsientoStore',{
           const r = await axios.post(`http://192.168.100.22:7001/api/erp/v1/modificar-asiento-detalle/${obj.asientoDetTemId}`, obj);
           return r.data;
         }catch (error) {
+          alert("error al modificar asiento, mensaje técnico: "+error);
           return {
             codigoMensaje:"-1",
             mensaje:"error"
@@ -164,6 +174,7 @@ export const useAsientoStore = defineStore('AsientoStore',{
           const r = await axios.get(`http://192.168.100.22:7001/api/erp/v1/obtener-cantidad-asientos/${pUsuarioId}/${pTipoReporteId}`);
           return r.data;
         }catch (error) {
+          alert("error al obtener cantidad de asientos: "+error);
           return {
             codigoMensaje:"-1",
             mensaje:"error"

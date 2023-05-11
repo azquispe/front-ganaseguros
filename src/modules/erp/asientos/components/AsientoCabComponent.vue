@@ -26,13 +26,11 @@
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            {{fechaDesde}}
             <span>Fecha Desde:</span>
             <input type="date" v-model="fechaDesde">
 
           </v-col>
           <v-col cols="12">
-            {{fechaHasta}}
             <span>Fecha Hasta:</span>
             <input type="date" v-model="fechaHasta">
           </v-col>
@@ -145,50 +143,105 @@ const clickCopiar = () => {
   window.getSelection().removeAllRanges()
 }
 const clickEnviarErp = async () => {
-  if (objAsientoCab.value.asientoCabTemId > 0) {
-    dialogLoadingStore.setDialogLoading(true, "Enviando a ERP...");
-    let lstDetAsiento = await asientoStore.obtenerAsientosDet(objAsientoCab.value.asientoCabTemId);
-    let detalle = [];
-    for (let item of lstDetAsiento) {
-      detalle.push({
-        CodigoRamo: objAsientoCab.value.codRamo,
-        CodigoReporte: objAsientoCab.value.codReporte,
-        AccountCode: item.codigoConcepto,
-        ShortName: item.descripcionConcepto,
-        LineMemo: item.descripcionCuenta,
-        Amount: item.debeHaber == "D" ? parseFloat(item.amountDebe) : parseFloat(item.amountHaber),
-        CostingCode: "",
-        CostingCode2: "",
-        CostingCode3: ""
-      })
+
+    if (objAsientoCab.value.asientoCabTemId > 0) {
+      dialogLoadingStore.setDialogLoading(true, "Enviando asiento");
+      let lstDetAsiento = await asientoStore.obtenerAsientosDet(objAsientoCab.value.asientoCabTemId);
+      let detalle = [];
+      for (let item of lstDetAsiento) {
+        detalle.push({
+          CodigoRamo: objAsientoCab.value.codRamo,
+          CodigoReporte: objAsientoCab.value.codReporte,
+          AccountCode: item.codigoConcepto,
+          ShortName: item.descripcionConcepto,
+          LineMemo: item.descripcionCuenta,
+          Amount: item.debeHaber == "D" ? parseFloat(item.amountDebe) : parseFloat(item.amountHaber),
+          CostingCode: "",
+          CostingCode2: "",
+          CostingCode3: ""
+        })
+      }
+      let request = {
+        asiento: {
+          TaxDate: objAsientoCab.value.taxDate,
+          DueDate: objAsientoCab.value.dueDate,
+          ReferenceDate: objAsientoCab.value.referenceDate,
+          Memo: props.reporte.nombreReporte,
+          References: "Enviado desde: App Web - Ganaseguros",
+          JournalEntryLine: detalle,
+        },
+        asientoCabTemId: objAsientoCab.value.asientoCabTemId,
+        usuarioId: 1000,
+        fechaDesde: fechaDesde.value,
+        fechaHasta: fechaHasta.value
+      }
+      let r = await asientoStore.enviarErpAsientos(request);
+      objAsientoCab.value.respSapCode = r.codigoMensaje;
+      objAsientoCab.value.respSapSms = r.mensaje;
+      dialogLoadingStore.setDialogLoading(false);
+      if (r.codigoMensaje == "1") {
+        objAsientoCab.value.respSapSms = "Nro Asiento: " + r.respuestaErp + ',  Mensaje ERP: ' + r.mensaje;
+        alert(r.mensaje)
+      } else {
+        alert(r.mensaje)
+      }
+      lstAsientoCab.value = await asientoStore.obtenerAsientoCab(props.reporte.codReporte)
+      objAsientoCab.value = lstAsientoCab.value.filter(r => r.asientoCabTemId === Number(objAsientoCab.value.asientoCabTemId))[0];
+      console.log(objAsientoCab.value);
     }
-    let request = {
-      asiento: {
-        TaxDate: objAsientoCab.value.taxDate,
-        DueDate: objAsientoCab.value.dueDate,
-        ReferenceDate: objAsientoCab.value.referenceDate,
-        Memo: props.reporte.nombreReporte,
-        References: "Enviado desde: App Web - Ganaseguros",
-        JournalEntryLine: detalle,
-      },
-      asientoCabTemId: objAsientoCab.value.asientoCabTemId,
-      usuarioId: 1000,
-      fechaDesde: fechaDesde.value,
-      fechaHasta: fechaHasta.value
+
+}
+
+const clickEnviarErpPrueba = async () => {
+
+  let cantidadEnvio = 1;
+  while (cantidadEnvio <= 5000) {
+    if (objAsientoCab.value.asientoCabTemId > 0) {
+      dialogLoadingStore.setDialogLoading(true, "Enviando : "+cantidadEnvio+" de 5000");
+      let lstDetAsiento = await asientoStore.obtenerAsientosDet(objAsientoCab.value.asientoCabTemId);
+      let detalle = [];
+      for (let item of lstDetAsiento) {
+        detalle.push({
+          CodigoRamo: objAsientoCab.value.codRamo,
+          CodigoReporte: objAsientoCab.value.codReporte,
+          AccountCode: item.codigoConcepto,
+          ShortName: item.descripcionConcepto,
+          LineMemo: item.descripcionCuenta,
+          Amount: item.debeHaber == "D" ? parseFloat(item.amountDebe) : parseFloat(item.amountHaber),
+          CostingCode: "",
+          CostingCode2: "",
+          CostingCode3: ""
+        })
+      }
+      let request = {
+        asiento: {
+          TaxDate: objAsientoCab.value.taxDate,
+          DueDate: objAsientoCab.value.dueDate,
+          ReferenceDate: objAsientoCab.value.referenceDate,
+          Memo: props.reporte.nombreReporte,
+          References: "Enviado desde: App Web - Ganaseguros",
+          JournalEntryLine: detalle,
+        },
+        asientoCabTemId: objAsientoCab.value.asientoCabTemId,
+        usuarioId: 1000,
+        fechaDesde: fechaDesde.value,
+        fechaHasta: fechaHasta.value
+      }
+      let r = await asientoStore.enviarErpAsientos(request);
+      objAsientoCab.value.respSapCode = r.codigoMensaje;
+      objAsientoCab.value.respSapSms = r.mensaje;
+      //dialogLoadingStore.setDialogLoading(false);
+      if (r.codigoMensaje == "1") {
+        objAsientoCab.value.respSapSms = "Nro Asiento: " + r.respuestaErp + ',  Mensaje ERP: ' + r.mensaje;
+        //alert(r.mensaje)
+      } else {
+        //alert(r.mensaje)
+      }
+      lstAsientoCab.value = await asientoStore.obtenerAsientoCab(props.reporte.codReporte)
+      objAsientoCab.value = lstAsientoCab.value.filter(r => r.asientoCabTemId === Number(objAsientoCab.value.asientoCabTemId))[0];
+      console.log(objAsientoCab.value);
     }
-    let r = await asientoStore.enviarErpAsientos(request);
-    objAsientoCab.value.respSapCode = r.codigoMensaje; // dede sap retorna 1, eso nomas esta retornando hasta el frontend
-    objAsientoCab.value.respSapSms = r.mensaje;
-    dialogLoadingStore.setDialogLoading(false);
-    if (r.codigoMensaje == "1") {
-      objAsientoCab.value.respSapSms = "Nro Asiento: " + r.respuestaErp + ',  Mensaje ERP: ' + r.mensaje;
-      alert(r.mensaje)
-    } else {
-      alert(r.mensaje)
-    }
-    lstAsientoCab.value = await asientoStore.obtenerAsientoCab(props.reporte.codReporte)
-    objAsientoCab.value = lstAsientoCab.value.filter(r => r.asientoCabTemId === Number(objAsientoCab.value.asientoCabTemId))[0];
-    console.log(objAsientoCab.value);
+    cantidadEnvio++;
   }
 }
 </script>
